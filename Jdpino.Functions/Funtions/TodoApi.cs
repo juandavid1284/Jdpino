@@ -1,3 +1,4 @@
+using jdpino.Common.Models;
 using jdpino.Common.Responses;
 using Jdpino.Functions.Entities;
 using Microsoft.AspNetCore.Http;
@@ -28,9 +29,9 @@ namespace Jdpino.Functions.Funtions
             string RequestBody = null;
 
 
-            Todo todo = JsonConvert.DeserializeObject<Todo>(RequestBody);
+           Todo todo = JsonConvert.DeserializeObject<Todo>(RequestBody);
 
-            if (string.IsNullOrEmpty(Todo))
+            if (string.IsNullOrEmpty(todo?.TaskDescription))
             {
                 return new BadRequestObjectResult(new Response
                 {
@@ -48,14 +49,14 @@ namespace Jdpino.Functions.Funtions
                 IsCompleted = false,
                 PartitionKey = "TODO",
                 RowKey = Guid.NewGuid().ToString(),
-                TaskDescription = todo
+                TaskDescription = todo.TaskDescription
 
             };
 
             TableOperation addOperation = TableOperation.Insert(todoEntity);
             await todoTable.ExecuteAsync(addOperation);
 
-            string message = "New todo ostored in table";
+            string message = "New todo estored in table";
             log.LogInformation(message);
 
 
@@ -76,5 +77,4 @@ namespace Jdpino.Functions.Funtions
 }
 
 
-   
-   
+
