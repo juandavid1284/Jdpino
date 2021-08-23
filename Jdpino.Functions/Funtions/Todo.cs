@@ -2,6 +2,10 @@
 {
     internal class Todo
     {
-        public string TasKdescripcion { get; internal set; }
+        public Date CreatedTime { get; set; }
+
+        public string TaskDescription { get; set; }
+
+        public bool IsCompleted { get; set; }
     }
 }

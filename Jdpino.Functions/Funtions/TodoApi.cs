@@ -1,20 +1,20 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using jdpino.Common.Responses;
+using Jdpino.Functions.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Microsoft.WindowsAzure.Storage.Table;
-using Microsoft.AspNetCore.Http.Features;
+using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 
 namespace Jdpino.Functions.Funtions
 {
     public static class TodoApi
     {
-        private static object todo;
+
 
         [FunctionName(nameof(CreateTodo))]
         public static async Task<IActionResult> CreateTodo(
@@ -26,25 +26,55 @@ namespace Jdpino.Functions.Funtions
             log.LogInformation("Recieved a new todo.");
 
             string RequestBody = null;
+
+
             Todo todo = JsonConvert.DeserializeObject<Todo>(RequestBody);
 
-            if (String.IsNullOrEmpty(todo?.TasKdescripcion));
+            if (string.IsNullOrEmpty(Todo))
             {
-                return new BadRequestObjectResult(new Response)
+                return new BadRequestObjectResult(new Response
+                {
+                    IsSucces = false,
+                    Message = "The Request must have a TaskDescription"
+                });
 
             }
 
+            TodoEntity todoEntity = new TodoEntity
+
+            {
+                CreatedTime = DateTime.UtcNow,
+                ETag = "*",
+                IsCompleted = false,
+                PartitionKey = "TODO",
+                RowKey = Guid.NewGuid().ToString(),
+                TaskDescription = todo
+
+            };
+
+            TableOperation addOperation = TableOperation.Insert(todoEntity);
+            await todoTable.ExecuteAsync(addOperation);
+
+            string message = "New todo ostored in table";
+            log.LogInformation(message);
 
 
-            string name = req.Query["name"];
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-         
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
 
-            return new OkObjectResult(responseMessage);
+
+            return new OkObjectResult(new Response
+            {
+
+                IsSucces = true,
+                Message = message,
+                Result = todoEntity
+
+            });
+
         }
     }
 }
+
+
+   
+   
