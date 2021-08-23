@@ -4,14 +4,4 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Responses\Response.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Responses\Response.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>
